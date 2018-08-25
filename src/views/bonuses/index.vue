@@ -1,61 +1,67 @@
 <template>
   <div class="app-container">
-    <!-- <div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" :placeholder="tableOptions[0]" v-model="listQuery.name">
-      </el-input>
-      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">{{$t('table.search')}}</el-button>
+    <div class="filter-container" align="right">
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.approvalStatus" placeholder="审核状态">
+        <el-option v-for="item in  statusOptions" :key="item.key" :label="item.display_name" :value="item.key">
+        </el-option>
+      </el-select>
+
+      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleSearch">{{$t('table.search')}}</el-button>
             
-      <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download" @click="handleDownload">{{$t('table.export')}}</el-button>
-      
-    </div> -->
+    </div>
     <br/>
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
       style="width: 100%;">
-      <el-table-column align="center" :label="tableOptions[0]" width="100px">
+      <el-table-column align="center" :label="tableOptions[0]"  width="160px">
         <template slot-scope="scope">
-          <span>{{scope.row.serialNumber}}</span>
+          <span>{{scope.row.createTime | timeFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column  align="center" :label="tableOptions[1]">
         <template slot-scope="scope">
-          <span>{{scope.row.name}}</span>
+          <span>{{scope.row.sellerName}}</span>
         </template>
-      </el-table-column>
-      <el-table-column align="center"  :label="tableOptions[2]">
+      </el-table-column>  
+      <el-table-column  align="center" :label="tableOptions[2]">
         <template slot-scope="scope">
-          <span>{{scope.row.mobile}}</span> 
+          <span>{{scope.row.mobile}}</span>
         </template>
       </el-table-column>
-      <el-table-column  align="center" :label="tableOptions[3]">
+      <el-table-column  align="center" :label="tableOptions[3]" width="170px">
         <template slot-scope="scope">
           <span>{{scope.row.idNumber}}</span>
         </template>
       </el-table-column>
       <el-table-column  align="center" :label="tableOptions[4]">
         <template slot-scope="scope">
-          <span>{{scope.row.channel}}</span>
+          <span>{{scope.row.cardId | cardIdFilter}}</span>
         </template>
-      </el-table-column>
-      <el-table-column align="center"  :label="tableOptions[5]">
+      </el-table-column>  
+      <el-table-column  align="center" :label="tableOptions[5]">
         <template slot-scope="scope">
-          <span>{{scope.row.direction}}</span> 
+          <span>{{scope.row.orderId}}</span>
         </template>
       </el-table-column>
       <el-table-column  align="center" :label="tableOptions[6]">
         <template slot-scope="scope">
-          <span>{{scope.row.amount}}</span>
+          <span>{{scope.row.orderPrice}}</span>
         </template>
-      </el-table-column>     
+      </el-table-column>
       <el-table-column  align="center" :label="tableOptions[7]">
         <template slot-scope="scope">
-          <span>{{scope.row.balance}}</span>
+          <span>{{scope.row.paid | booleanFilter}}</span>
         </template>
-      </el-table-column>  
-      <el-table-column  align="center" :label="tableOptions[8]">
+      </el-table-column>
+      <el-table-column  align="center" prop="status"  :label="tableOptions[8]">
         <template slot-scope="scope">
-          <span>{{scope.row.time | timeFilter }}</span>
+          <span>{{scope.row.approvalStatus | statusFilter }}</span>
         </template>
       </el-table-column>     
+      <el-table-column align="center" :label="tableOptions[9]" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button type="primary" size="mini" @click="handleMore(scope.row.id)">详情</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <br/>
     <div class="pagination-container">
@@ -77,9 +83,14 @@
 </template>
 
 <script>
-import { fetchASList } from '@/api/financial'
+import { fetchBonusesList } from '@/api/financial'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
+const statusOptions = [
+  { key: '1', display_name: '待审核' },
+  { key: '2', display_name: '已拒绝' },
+  { key: '3', display_name: '已通过' }
+]
 
 export default {
   name: 'financial',
@@ -95,21 +106,31 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        name: undefined,
-        region: undefined
+        approvalStatus: ''
       },
-      tableOptions: ['流水号', '姓名', '手机号码', '身份证号', '资金通道', '资金方向', '金额', '余额', '时间', '操作'],
+      statusOptions,
+      tableOptions: [
+        '记录创建时间',
+        '姓名',
+        '手机号码',
+        '身份证号',
+        '卡号',
+        '订单号',
+        '订单金额',
+        '是否发放',
+        '审核状态',
+        '操作'],
       temp: {
         id: undefined,
-        serialNumber: '',
-        channel: '',
-        direction: '',
-        amount: '',
-        balance: '',
-        time: '',
-        name: '',
+        createTime: '',
+        sellerName: '',
         mobile: '',
-        idNumber: ''
+        idNumber: '',
+        cardId: '',
+        orderId: '',
+        orderPrice: '',
+        paid: '',
+        approvalStatus: ''
       },
       dialogPvVisible: false,
       pvData: [],
@@ -119,14 +140,30 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        1: '待审核',
+        2: '已拒绝',
+        3: '已通过'
       }
       return statusMap[status]
     },
+    booleanFilter(val) {
+      if (val) {
+        return '是'
+      } else {
+        return '否'
+      }
+    },
     timeFilter(time) {
       return parseTime(time)
+    },
+    cardIdFilter(id) {
+      const cardIdMap = {
+        1: '月卡',
+        2: '季卡',
+        3: '年卡',
+        4: '体验卡'
+      }
+      return cardIdMap[id]
     }
   },
   created() {
@@ -136,15 +173,11 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchASList(this.listQuery).then(response => {
+      fetchBonusesList(this.listQuery).then(response => {
         this.list = response.data.data
         this.listLoading = false
         this.total = response.data.totalCount
       })
-    },
-    handleFilter() {
-      this.listQuery.page = 1
-      this.getList()
     },
     handleSizeChange(val) {
       this.listQuery.limit = val
@@ -154,26 +187,11 @@ export default {
       this.listQuery.page = val
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+    handleMore(id) {
+      this.$router.push({ path: '/bonuses/detail', query: { bonusesid: id }})
     },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['名称', '地址', '所在区域', '店长', '简介', '操房数量', '总面积', '私教面积', '店铺封面', '店铺照片', '开店时间']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal, this.list)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: '店铺列表'
-        })
-        this.downloadLoading = false
-      })
+    handleSearch() {
+      this.getList()
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
@@ -184,10 +202,6 @@ export default {
         }
       }))
     }
-    // ,
-    // resolvePath(...paths) {
-    //   return path.resolve(this.basePath, ...paths)
-    // }
   }
 }
 </script>

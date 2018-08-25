@@ -21,7 +21,7 @@ export function fetchWithdrawInfo(id) {
   })
 }
 
-// 审核通过
+// 提现审核通过
 export function withdrawAccept(id) {
   return request({
     url: '/withdraws/' + id + '/accept',
@@ -29,10 +29,45 @@ export function withdrawAccept(id) {
   })
 }
 
-// 审核拒绝
+// 提现审核拒绝
 export function withdrawReject(id, msg) {
   return request({
     url: '/withdraws/' + id + '/reject',
+    method: 'post',
+    data: {
+      'message': msg
+    }
+  })
+}
+
+// 提成列表
+export function fetchBonusesList(listQuery) {
+  return request({
+    url: '/bonuses?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit + '&approvalStatus=' + listQuery.approvalStatus,
+    method: 'get'
+  })
+}
+
+// 提成详情
+export function fetchBonusesInfo(id) {
+  return request({
+    url: '/bonuses/' + id,
+    method: 'get'
+  })
+}
+
+// 提成审核通过
+export function bonusesAccept(id) {
+  return request({
+    url: '/bonuses/' + id + '/accept',
+    method: 'post'
+  })
+}
+
+// 提成审核拒绝
+export function bonusesReject(id, msg) {
+  return request({
+    url: '/bonuses/' + id + '/reject',
     method: 'post',
     data: {
       'message': msg

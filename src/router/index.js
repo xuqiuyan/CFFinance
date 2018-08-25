@@ -104,22 +104,26 @@ export const constantRouterMap = [
         meta: { title: '提现详情', icon: 'withdraw' },
         hidden: true
       }
-      // ,
-      // {
-      //   path: '/withdraw/detail',
-      //   component: () => import('@/views/withdraw/detail'),
-      //   meta: { title: '提现详情' },
-      //   hidden: true,
-      //   children: [
-      //     {
-      //       path: 'index',
-      //       name: 'withdrawDetail',
-      //       component: () => import('@/views/withdraw/detail/index'),
-      //       meta: { title: '提现详情', icon: 'withdraw' },
-      //       hidden: true
-      //     }
-      //   ]
-      // }
+    ]
+  },
+  {
+    path: '/bonuses',
+    component: Layout,
+    meta: { title: '提成管理', icon: 'bonuses' },
+    children: [
+      {
+        path: 'index',
+        name: 'bonuses',
+        component: () => import('@/views/bonuses/index'),
+        meta: { title: '提成管理', icon: 'bonuses' }
+      },
+      {
+        path: '/bonuses/detail',
+        name: 'bonusesDetail',
+        component: () => import('@/views/bonuses/detail/index'),
+        meta: { title: '提成详情', icon: 'bonuses' },
+        hidden: true
+      }
     ]
   }
 ]

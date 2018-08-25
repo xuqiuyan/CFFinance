@@ -53,8 +53,6 @@
 
 <script>
 import Bus from '@/api/bus'
-// import COS from 'cos-js-sdk-v5'
-// import getAuth from '@/api/getAuth'
 
 import UploadImg from '@/components/uploadFiles/UploadImg'
 

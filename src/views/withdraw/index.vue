@@ -14,7 +14,7 @@
     <br/>
     <el-table :key='tableKey' :data="list" v-loading="listLoading" border fit highlight-current-row
       style="width: 100%;">
-      <el-table-column align="center" :label="tableOptions[0]">
+      <el-table-column align="center" :label="tableOptions[0]"  width="160px">
         <template slot-scope="scope">
           <span>{{scope.row.createTime | timeFilter }}</span>
         </template>
@@ -23,23 +23,54 @@
         <template slot-scope="scope">
           <span>{{scope.row.accountName}}</span>
         </template>
-      </el-table-column>
+      </el-table-column>  
       <el-table-column  align="center" :label="tableOptions[2]">
+        <template slot-scope="scope">
+          <span>{{scope.row.mobile}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" :label="tableOptions[3]" width="150px">
+        <template slot-scope="scope">
+          <span>{{scope.row.idNumber}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" :label="tableOptions[4]" width="150px">
         <template slot-scope="scope">
           <span>{{scope.row.cardNumber}}</span>
         </template>
       </el-table-column>  
-      <el-table-column  align="center" :label="tableOptions[3]">
+      <el-table-column  align="center" :label="tableOptions[5]">
         <template slot-scope="scope">
           <span>{{scope.row.amount}}</span>
         </template>
       </el-table-column>
-      <el-table-column  align="center" prop="status"  :label="tableOptions[4]">
+      <el-table-column  align="center" :label="tableOptions[6]">
+        <template slot-scope="scope">
+          <span>{{scope.row.paidAmount}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" :label="tableOptions[7]">
+        <template slot-scope="scope">
+          <span>{{scope.row.fee}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" :label="tableOptions[8]">
+        <template slot-scope="scope">
+          <span>{{scope.row.month}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column  align="center" :label="tableOptions[9]">
+        <template slot-scope="scope">
+          <span>{{scope.row.index}}</span>
+        </template>
+      </el-table-column>
+      
+      <el-table-column  align="center" prop="status"  :label="tableOptions[10]">
         <template slot-scope="scope">
           <span>{{scope.row.status | statusFilter }}</span>
         </template>
       </el-table-column>     
-      <el-table-column align="center" :label="tableOptions[5]" class-name="small-padding fixed-width">
+      <el-table-column align="center" :label="tableOptions[11]" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleMore(scope.row.id)">详情</el-button>
         </template>
@@ -92,14 +123,32 @@ export default {
         status: ''
       },
       statusOptions,
-      tableOptions: ['提现创建时间', '姓名', '卡号', '提现金额', '审核状态', '操作'],
+      tableOptions: [
+        '提现创建时间',
+        '姓名',
+        '手机号码',
+        '身份证号',
+        '卡号',
+        '提现金额',
+        '到账金额',
+        '手续费',
+        '月份',
+        '数量',
+        '审核状态',
+        '操作'],
       temp: {
         id: undefined,
         createTime: '',
         accountName: '',
         cardNumber: '',
         amount: '',
-        status: ''
+        status: '',
+        paidAmount: '',
+        fee: '',
+        month: '',
+        index: '',
+        idNumber: '',
+        mobile: ''
       },
       dialogPvVisible: false,
       pvData: [],
@@ -126,16 +175,12 @@ export default {
     this.getList()
   },
   methods: {
-    filterStatus(value) {
-      // todo filter
-      this.listQuery.status = value
-      this.getList()
-    },
     getList() {
       this.listLoading = true
       fetchWithdrawList(this.listQuery).then(response => {
         this.list = response.data.data
         this.listLoading = false
+        this.total = response.data.totalCount
       })
     },
     handleSizeChange(val) {

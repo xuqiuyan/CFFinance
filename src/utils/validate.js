@@ -38,11 +38,15 @@ export function validatePhoneNumber(str) {
   const reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
   return reg.test(str)
 }
-
+/* 密码是否合法*/
+export function validatePassword(str) {
+  const reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/
+  return reg.test(str)
+}
 /* 是否手机验证*/
 export function validateVerify() {
   return request({
-    url: 'https://financeapi.cicadafitness.net/login/verify',
+    url: '/login/verify',
     method: 'get'
   })
 }
@@ -50,7 +54,7 @@ export function validateVerify() {
 /* 获取验证码*/
 export function validateVerifyCode(str) {
   return request({
-    url: 'https://financeapi.cicadafitness.net/login/sendverifycode?mobile=' + str,
+    url: '/login/sendverifycode?mobile=' + str,
     method: 'get'
   })
 }

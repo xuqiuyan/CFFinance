@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { fetchWithdrawList } from '@/api/financial'
+import { fetchWithdrawReviewsList } from '@/api/financial'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 const statusOptions = [
@@ -107,7 +107,7 @@ const statusOptions = [
   { key: '5', display_name: '已打款' }
 ]
 export default {
-  name: 'financial',
+  name: 'FinancialReviews',
   directives: {
     waves
   },
@@ -177,7 +177,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchWithdrawList(this.listQuery).then(response => {
+      fetchWithdrawReviewsList(this.listQuery).then(response => {
         this.list = response.data.data
         this.listLoading = false
         this.total = response.data.totalCount
@@ -192,7 +192,7 @@ export default {
       this.getList()
     },
     handleMore(id) {
-      this.$router.push({ path: '/withdraw/detail', query: { withdrawid: id }})
+      this.$router.push({ path: '/financial/withdraw/detail', query: { withdrawid: id }})
     },
     handleSearch() {
       this.getList()

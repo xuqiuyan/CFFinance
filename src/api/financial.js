@@ -1,14 +1,21 @@
 import request from '@/utils/request'
 export function fetchASList(listQuery) {
   return request({
-    url: '/accountstatements?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit,
+    url: '/funds?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit,
     method: 'get'
   })
 }
 // 提现列表
-export function fetchWithdrawList(listQuery) {
+export function fetchWithdrawReviewsList(listQuery) {
   return request({
-    url: '/withdraws?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit + '&status=' + listQuery.status,
+    url: '/withdraws/reviews?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit,
+    method: 'get'
+  })
+}
+
+export function fetchWithdrawApprovalList(listQuery) {
+  return request({
+    url: '/withdraws/approval?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit,
     method: 'get'
   })
 }
@@ -72,5 +79,12 @@ export function bonusesReject(id, msg) {
     data: {
       'message': msg
     }
+  })
+}
+// 充值记录
+export function fetchRechargesList(listQuery) {
+  return request({
+    url: '/recharges?start=' + (listQuery.page - 1) * listQuery.limit + '&length=' + listQuery.limit,
+    method: 'get'
   })
 }

@@ -188,7 +188,7 @@ export default {
       this.getList()
     },
     handleMore(id) {
-      this.$router.push({ path: '/bonuses/detail', query: { bonusesid: id }})
+      this.$router.push({ path: '/financial/bonuses/detail', query: { bonusesid: id }})
     },
     handleSearch() {
       this.getList()

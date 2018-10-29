@@ -207,7 +207,7 @@ export default {
     },
     handleReject() {
       this.dialogFormVisible = false
-      bonusesReject(this.withdrawid, this.whyReject).then(response => {
+      bonusesReject(this.bonusesid, this.whyReject).then(response => {
         console.log(response.data)
         this.$message({
           message: '已提现拒绝',
